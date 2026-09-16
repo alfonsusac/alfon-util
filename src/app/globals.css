@@ -1,26 +1,112 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-bg: var(--color-zinc-950);
+  --color-fg: var(--color-zinc-100);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@utility button {
+  @apply block hover:bg-fg/5 text-sm
+  px-2 -mx-2 leading-7 cursor-pointer
+}
+@utility button-active {
+  @apply pointer-events-none bg-fg/10
+}
+
+.shiki {
+  @apply bg-bg! outline-none ;
+}
+.twoslash-hover {
+  @apply relative;
+  anchor-name: --arr-trigger;
+  anchor-scope: --arr-trigger;
+  > .twoslash-popup-container {
+    position-anchor: --arr-trigger;
+    position-area: block-start span-inline-end;
+    position-try-fallbacks: block-end span-inline-start;
+    > .twoslash-popup-code {
+      @apply p-2 block min-w-0 
+    }
+    > .twoslash-popup-docs {
+      @apply p-2 block min-w-0 text-fg/75
+    }
+    @apply fixed pointer-events-auto hidden text-xs min-w-0 whitespace-pre-wrap
+    bg-black z-10 border border-fg/20 shadow-md shadow-black 
+    hover:block transition-all transition-discrete
+    hover:delay-500 delay-150 max-h-[40vh] overflow-y-auto;
+  };
+  &:hover {
+    > .twoslash-popup-container {
+      @apply block starting:opacity-0 delay-500
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.ansi-black{
+  @apply text-fg/15
+}  
+.ansi-red{
+  @apply text-red-500
+}    
+.ansi-green{
+  @apply text-green-500
+}  
+.ansi-yellow{
+  @apply text-amber-500
+} 
+.ansi-blue{
+  @apply text-blue-500
+}   
+.ansi-magenta{
+  @apply text-purple-500
+}
+.ansi-cyan{
+  @apply text-cyan-500
+}   
+.ansi-white{
+  @apply text-white
+}  
+.ansi-bright-black{
+  @apply text-fg/50
+}  
+.ansi-bright-red{
+  @apply text-red-400
+}    
+.ansi-bright-green{
+  @apply text-green-400
+}  
+.ansi-bright-yellow{
+  @apply text-amber-400
+} 
+.ansi-bright-blue{
+  @apply text-blue-400
+}   
+.ansi-bright-magenta{
+  @apply text-purple-400
+}
+.ansi-bright-cyan{
+  @apply text-cyan-400
+}   
+.ansi-bright-white{
+  @apply text-white
+}  
+
+
+/* Document / Page */
+h2 {
+  @apply text-xl mt-8 mb-4
+}
+
+
+/* Markdowns */
+.ol {
+  @apply list-decimal
+}
+.ul {
+  @apply list-disc pl-6
 }
