@@ -14,9 +14,18 @@ export function SidebarLinkButton(props: {
   return (
     <Link
       href={props.href}
-      className={"button " + (active ? "button-active" : "")}
+      className={"button line-clamp-1 break-all" + (active ? " button-active" : "")}
     >
       {props.children}
     </Link>
   )
+}
+
+
+export function HomePageButton() {
+  const pathname = usePathname()
+  if (pathname === "/") return <></>
+  return <Link href="/" className="button">
+    {'<-'} Home
+  </Link>
 }

@@ -1,5 +1,5 @@
 import { CodeBlock, ConsoleBlock, MutedText } from "@/app/components"
-import { get_util, get_util_filenames, get_util_meta, get_util_raw_code } from "@/lib/get-utils"
+import { extract_examples, get_util, get_util_filenames, get_util_meta, get_util_raw_code } from "@/lib/get-utils"
 import { Markdown } from "@/ui/markdown"
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
@@ -21,8 +21,10 @@ async function UtilPageSuspensed(props: PageProps<'/utils/[slug]'>) {
   const util_filename = utils.find(u => u === slug)
   if (!util_filename) return notFound()
   const util = await get_util("UtilPageSuspensed", slug)
-  const util_content = await get_util_raw_code("UtilPageSuspensed", slug)
-  const util_meta = await get_util_meta("UtilPageSuspensed", slug, util_content)
+  const [ util_content, util_raw_content ] = await get_util_raw_code("UtilPageSuspensed", slug)
+  const util_examples = extract_examples("UtilPageSuspensed", util_raw_content, util_filename)
+  console.log(util_examples)
+  const util_meta = await get_util_meta("UtilPageSuspensed", slug, util_content, util_examples)
   return <>
     <header>
       <p className="text-sm">

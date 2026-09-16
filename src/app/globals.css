@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 @theme inline {
+
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -8,6 +10,9 @@
 
   --color-bg: var(--color-zinc-950);
   --color-fg: var(--color-zinc-100);
+
+  --breakpoint-xxs: 360px;
+  --breakpoint-xs: 480px;
 }
 
 @utility button {

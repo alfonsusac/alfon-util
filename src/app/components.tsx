@@ -109,7 +109,7 @@ export async function ConsoleBlock(props: {
   output: string[],
   borderTop?: boolean,
 }) {
-  return <div className={"p-4 text-sm font-mono border border-fg/10 " + (props.borderTop ? "" : "border-t-0")}>
+  return <div className={"p-4 text-sm font-mono border border-fg/10 overflow-x-auto " + (props.borderTop ? "" : "border-t-0")}>
     {props.output.map((line, line_id) => {
       const tokens = Anser.ansiToJson(line, {
         json: true,

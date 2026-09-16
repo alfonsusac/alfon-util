@@ -1,7 +1,9 @@
 import { readdir, readFile } from "fs/promises"
 import * as prettier from "prettier"
 import { cache } from "react"
+import { Project, SyntaxKind, VariableDeclarationKind } from "ts-morph"
 import { formatWithOptions } from "util"
+import { extractExamples } from "./extract-examples"
 
 
 type UtilEntry = {
@@ -53,10 +55,17 @@ export async function get_util_raw_code(context: string, filename: string) {
     /^export\s+const\s+\w+\s*:\s*Meta\s*=\s*\{[\s\S]*$/m,
     ''
   ).trim()
-  return code
+  return [ code, raw ] as const
 }
 
-export async function get_util_meta(context: string, filename: string, content_code: string) {
+export function extract_examples(context: string, code: string, filename: string) {
+  // claude coded this.
+  console.log(`extract_examples ${ context }`)
+  return extractExamples(`./src/util/${ filename }`)
+}
+
+
+export async function get_util_meta(context: string, filename: string, content_code: string, example_codes: { name: string, content: string }[]) {
   console.log(`get_util_meta ${ context }`)
   const module = await import(`../util/${ filename }`)
   const examples: {
@@ -69,8 +78,13 @@ export async function get_util_meta(context: string, filename: string, content_c
   if (!meta) {
     return null
   }
+  let i = -1
   for (const e of meta.examples ?? []) {
-    const example_code = await format_example_code(e.code.toString(), content_code)
+    i++
+    // const example_code = await format_example_code(e.code.toString(), content_code)
+    let example_code = example_codes[ i ].content
+
+    example_code = `${ content_code }\n// ---cut-before---\n${ example_code }`
 
     // Get results
     const output: any[][] = []
@@ -79,8 +93,10 @@ export async function get_util_meta(context: string, filename: string, content_c
     const formatted_output = output
       .map(line => line
         .map(arg => formatWithOptions({
+          compact: true,
           colors: true,
           breakLength: 50,
+          depth: 10,
         }, arg)).join(' '))
 
 
@@ -116,8 +132,7 @@ async function format_example_code(code: string, content_code: string) {
     .map(line => line.slice(count))
     .join('\n')
 
-  example_code = `${ content_code }\n
-    \n// ---cut-before---\n${ example_code }`
+
 
   example_code = await prettier.format(example_code, {
     parser: "typescript",
@@ -128,6 +143,7 @@ async function format_example_code(code: string, content_code: string) {
   })
   return example_code
 }
+
 
 
 

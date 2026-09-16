@@ -4,7 +4,7 @@ import "./globals.css"
 import { cn } from "cn"
 import { Suspense } from "react"
 import { UtilList } from "./components"
-import { SidebarLinkButton } from "./components.client"
+import { HomePageButton, SidebarLinkButton } from "./components.client"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,9 +22,9 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
-  
-  console.log(`\n\n\n\n\n\n[hmr] - ${new Date().toISOString()}`)
-  
+
+  console.log(`\n\n\n\n\n\n[hmr] - ${ new Date().toISOString() }`)
+
   return (
     <html
       lang="en"
@@ -43,7 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           '--py': 'calc(var(--spacing) * 8)',
         }}
       >
-        <div className="w-40 flex flex-col gap-4 shrink-0">
+        <div className="w-40 max-sm:w-32 flex flex-col gap-4 shrink-0 max-xs:hidden">
           <section className="grow">
             <SidebarLinkButton href="/">
               home
@@ -54,6 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </section>
         </div>
         <main className="flex flex-col grow gap-8 min-w-0">
+          <HomePageButton />
           {children}
         </main>
       </body>
