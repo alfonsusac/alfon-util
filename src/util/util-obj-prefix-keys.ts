@@ -1,5 +1,4 @@
 export function prefixKeys<T extends object, P extends string>(obj: T, prefix: P) {
-
   const res = Object.fromEntries(
     Object.entries(obj).map(([ key, value ]) => {
       return [ `${ prefix }${ key }`, value ]
@@ -9,6 +8,17 @@ export function prefixKeys<T extends object, P extends string>(obj: T, prefix: P
     [ key in keyof T  as `${ P }${ key & (string | number) }` ]: T[ key ]
   }
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 export const meta: Meta = {
@@ -23,7 +33,7 @@ export const meta: Meta = {
           padding: '1rem'
         }
         console.log(prefixKeys(css_styles, '--'))
-        
+
         const env_config = {
           host: 'localhost',
           port: 3000
@@ -44,6 +54,6 @@ export const meta: Meta = {
 
         console.log(prefixKeys(obj, 'key_'))
       }
-    }
+    },
   ]
 }

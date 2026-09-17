@@ -1,5 +1,6 @@
-import { CodeBlock, ConsoleBlock, MutedText } from "@/app/components"
+import { ConsoleBlock, MutedText } from "@/app/components"
 import { extract_examples, get_util, get_util_filenames, get_util_meta, get_util_raw_code } from "@/lib/get-utils"
+import { CodeBlock } from "@/ui/code-block"
 import { Markdown } from "@/ui/markdown"
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
@@ -54,7 +55,7 @@ async function UtilPageSuspensed(props: PageProps<'/utils/[slug]'>) {
         <div className="flex flex-col gap-12">
           {util_meta.examples?.map((e, e_i) => {
             return <div className="flex flex-col gap-2" key={e_i}>
-              {e.name}
+              <Markdown md={e.name} />
               <div className="flex flex-col">
                 <CodeBlock code={e.code ?? ''} lang="tsx" />
                 <ConsoleBlock output={e.output ?? []} borderTop={false} />

@@ -1,4 +1,4 @@
-import { Project, SyntaxKind, VariableDeclarationKind, Node } from 'ts-morph'
+import { Project, SyntaxKind, VariableDeclarationKind, Node, type CallExpression } from 'ts-morph'
 
 function dedent(text: string): string {
   const lines = text.split('\n')
@@ -17,6 +17,9 @@ function dedent(text: string): string {
 }
 
 function extractFunctionBody(fn: Node): string {
+  stripConsoleLogWrapping(fn)
+
+
   // Arrow function: could have a block body `{ ... }` or an inline expression body
   if (fn.isKind(SyntaxKind.ArrowFunction)) {
     const body = fn.getBody()
@@ -68,7 +71,8 @@ export function extractExamples(filePath: string) {
     })
 
   if (!metaDeclaration) {
-    throw new Error('Could not find `export const meta: Meta = {...}` declaration')
+    return []
+    // throw new Error('Could not find `export const meta: Meta = {...}` declaration')
   }
 
   const metaObject = metaDeclaration.getInitializerIfKindOrThrow(
@@ -83,7 +87,8 @@ export function extractExamples(filePath: string) {
     )
 
   if (!examplesProp) {
-    throw new Error('Could not find "examples" property on meta object')
+    return []
+    // throw new Error('Could not find "examples" property on meta object')
   }
 
   const examplesArray = examplesProp.getInitializerIfKindOrThrow(
@@ -119,4 +124,53 @@ export function extractExamples(filePath: string) {
 
     return { name, content }
   })
+}
+
+
+
+
+
+
+
+
+function isConsoleLogCall(node: Node): node is CallExpression {
+  if (!Node.isCallExpression(node)) return false
+
+  const expr = node.getExpression()
+  return (
+    Node.isPropertyAccessExpression(expr) &&
+    expr.getExpression().getText() === 'console' &&
+    expr.getName() === 'log'
+  )
+}
+
+function stripConsoleLogWrapping(root: Node) {
+  let foundOne = true
+  while (foundOne) {
+    foundOne = false
+    const calls = root.getDescendantsOfKind(SyntaxKind.CallExpression)
+
+    for (const call of calls) {
+      if (!isConsoleLogCall(call)) continue
+
+      const args = call.getArguments()
+      const parent = call.getParent()
+
+      if (Node.isExpressionStatement(parent) && parent.getExpression() === call) {
+        // Plain join, no manual indentation — formatText() will fix indentation for us
+        const replacement = args.map(a => a.getText()).join('\n')
+        parent.replaceWithText(replacement)
+      } else {
+        const replacement = args.map(a => a.getText()).join(', ')
+        call.replaceWithText(replacement)
+      }
+
+      foundOne = true
+      break
+    }
+  }
+
+  // Let TypeScript's formatter fix indentation now that the AST has proper
+  // sibling statements, instead of trying to compute indentation by hand
+  root.getSourceFile().formatText()
 }

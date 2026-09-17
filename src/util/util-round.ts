@@ -2,7 +2,7 @@ export function round(val: number, dpsf = 2, mode: 'dp' | 'sf' = 'dp') {
   if (mode === 'sf')
     return Number(val.toPrecision(dpsf))
   const factor = 10 ** dpsf
-  return Math.round((val + Number.EPSILON) * factor) / factor
+  return Math.round((val) * factor) / factor
 }
 
 
@@ -12,6 +12,7 @@ export function round(val: number, dpsf = 2, mode: 'dp' | 'sf' = 'dp') {
 
 
 export const meta: Meta = {
+  details: `- Rounding errors due to floating point might occurs. See \`round(1.005)\``,
   examples: [
     {
       name: "Round Numbers",
@@ -21,7 +22,7 @@ export const meta: Meta = {
         console.log(round(3.14159, 3, 'sf'))
         console.log(round(123456789, 3, 'sf'))
         console.log(round(123456789, 3, 'dp'))
-        console.log(round(1.005, 2))
+        console.log(round(1.005 ))
       }
     },
   ]

@@ -63,6 +63,9 @@ const markdownComponents = ({
   },
   text: props => {
     return <>{props.node.value}</>
+  },
+  inlineCode: props => {
+    return <code className="code">{props.node.value}</code>
   }
 
 

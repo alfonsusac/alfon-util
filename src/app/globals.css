@@ -115,3 +115,12 @@ h2 {
 .ul {
   @apply list-disc pl-6
 }
+.code {
+  @apply text-sm text-fg/80 bg-fg/10 px-1.5 py-0.5 rounded-lg
+}
+.p {
+  @apply mb-3;
+}
+.li > .p {
+  @apply mb-1;
+}

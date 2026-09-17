@@ -1,7 +1,6 @@
 import { readdir, readFile } from "fs/promises"
 import * as prettier from "prettier"
 import { cache } from "react"
-import { Project, SyntaxKind, VariableDeclarationKind } from "ts-morph"
 import { formatWithOptions } from "util"
 import { extractExamples } from "./extract-examples"
 
@@ -18,14 +17,6 @@ type UtilEntry = {
     }[]>
     imported?: Record<string, any>
   }>
-  // content: string,
-  // description?: string,
-  // examples?: {
-  //   name?: string,
-  //   code?: string,
-  //   output?: string[][],
-  // }[]
-  // imported?: Record<string, any>
 }
 
 export const get_util_filenames = cache(async function get_util_filenames(context: string) {
@@ -50,7 +41,6 @@ export const get_util = cache(async function get_util(context: string, filename:
 export async function get_util_raw_code(context: string, filename: string) {
   console.log(`get_util_raw_code ${ context }`)
   const raw = await readFile(`./src/util/${ filename }`, { encoding: 'utf-8' })
-  // const code = raw.split('\n// end')[ 0 ]
   const code = raw.replace(
     /^export\s+const\s+\w+\s*:\s*Meta\s*=\s*\{[\s\S]*$/m,
     ''

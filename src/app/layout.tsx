@@ -44,7 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         }}
       >
         <div className="w-40 max-sm:w-32 flex flex-col gap-4 shrink-0 max-xs:hidden">
-          <section className="grow">
+          <section className="sticky sticky top-(--py)">
             <SidebarLinkButton href="/">
               home
             </SidebarLinkButton>
