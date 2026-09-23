@@ -53,6 +53,7 @@ function extractFunctionBody(fn: Node): string {
 }
 
 export function extractExamples(filePath: string) {
+  // claude coded this.
   const project = new Project()
   const sourceFile = project.addSourceFileAtPath(filePath)
 
@@ -172,5 +173,7 @@ function stripConsoleLogWrapping(root: Node) {
 
   // Let TypeScript's formatter fix indentation now that the AST has proper
   // sibling statements, instead of trying to compute indentation by hand
-  root.getSourceFile().formatText()
+  root.getSourceFile().formatText({
+    indentSize: 2,
+  })
 }

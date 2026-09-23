@@ -1,5 +1,5 @@
 import { get_util_filenames } from "@/lib/get-utils"
-import { SidebarLinkButton } from "./components.client"
+// import { SidebarLinkButton } from "./components.client"
 import { Suspense, type ComponentProps } from "react"
 import { cn } from "cn"
 import { codeToHtml, type BundledLanguage } from "shiki"
@@ -14,21 +14,21 @@ export function MutedText(props: ComponentProps<"span">) {
   return <span {...props} className={c(props, "text-fg/40")} />
 }
 
-export async function UtilList() {
-  const utils = await get_util_filenames("components:util-list")
-  return <>
-    {
-      utils.map(util => {
-        return <SidebarLinkButton
-          href={`/utils/${ util }`}
-          key={util}
-        >
-          {util}
-        </SidebarLinkButton>
-      })
-    }
-  </>
-}
+// export async function UtilList() {
+//   const utils = await get_util_filenames("components:util-list")
+//   return <>
+//     {
+//       utils.map(util => {
+//         return <SidebarLinkButton
+//           href={`/utils/${ util }`}
+//           key={util}
+//         >
+//           {util}
+//         </SidebarLinkButton>
+//       })
+//     }
+//   </>
+// }
 
 
 

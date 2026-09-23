@@ -3,8 +3,13 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { cn } from "cn"
 import { Suspense } from "react"
-import { UtilList } from "./components"
-import { HomePageButton, SidebarLinkButton } from "./components.client"
+// import { UtilList } from "./components"
+import {
+  HomePageButton,
+  // SidebarLinkButton
+} from "./components.client"
+import { DirList } from "./ui-content-tree"
+import { MenuItem } from "./ui-menu-item-client"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,7 +28,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
 
-  console.log(`\n\n\n\n\n\n[hmr] - ${ new Date().toISOString() }`)
+  console.log(`\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n[hmr] - ${ new Date().toISOString() }`)
 
   return (
     <html
@@ -43,13 +48,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           '--py': 'calc(var(--spacing) * 8)',
         }}
       >
-        <div className="w-40 max-sm:w-32 flex flex-col gap-4 shrink-0 max-xs:hidden">
+        <div className="w-40 max-sm:w-32 flex flex-col gap-4 shrink-0 max-sm:hidden">
           <section className="sticky sticky top-(--py)">
-            <SidebarLinkButton href="/">
+            <MenuItem href="/">
               home
-            </SidebarLinkButton>
+            </MenuItem>
             <Suspense fallback={<i>Loading modules...</i>}>
-              <UtilList />
+              <DirList />
             </Suspense>
           </section>
         </div>

@@ -1,4 +1,4 @@
-import { get_util_filenames, get_util_raw_code } from "@/lib/get-utils"
+import { get_all_file_contents } from "@/lib/get-content"
 import { transformerTwoslash } from "@shikijs/twoslash"
 import { Suspense } from "react"
 import { codeToHtml, type BundledLanguage } from "shiki"
@@ -7,6 +7,7 @@ import { createTwoslasher } from "twoslash"
 export function CodeBlock(props: {
   code: string,
   lang: BundledLanguage,
+  className?: string,
 }) {
   let code = props.code.trim()
 
@@ -27,7 +28,7 @@ export function CodeBlock(props: {
   </div>
 
   return <div
-    className="flex flex-col border border-fg/10  relative"
+    className={`flex flex-col border border-fg/10  relative ${props.className ?? ''}`}
   >
     <div className="flex justify-end absolute top-0 right-0">
       <button className="button text-xs self-start m-0! leading-6">Copy</button>
@@ -63,12 +64,7 @@ async function CodeBlockWithShiki(props: {
 
 const twoslasher = createTwoslasher({
   extraFiles: await (async () => {
-    const filenames = await get_util_filenames('createTwoslasher')
-    const entries: [ string, string ][] = []
-    for (const filesname of filenames) {
-      const [ content, raw ] = await get_util_raw_code('createTwoslasher', filesname)
-      entries.push([ filesname, content ])
-    }
+    const entries = await get_all_file_contents()
     return Object.fromEntries(entries)
   })()
 })

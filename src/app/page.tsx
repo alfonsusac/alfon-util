@@ -1,5 +1,5 @@
 import { Suspense } from "react"
-import { UtilList } from "./components"
+import { DirList } from "./ui-content-tree"
 
 export default function Home() {
   return <>
@@ -15,12 +15,18 @@ export default function Home() {
       </p>
     </header>
 
-    <section className="grow  *:button">
+    <section className="grow">
       <Suspense fallback={<i>Loading modules...</i>}>
-        <UtilList />
+        <HomeAsync />
       </Suspense>
     </section>
   </>
+}
+
+async function HomeAsync() {
+  // const e = await get_all_file_contents()
+  // console.log(e)
+  return <DirList />
 }
 
 

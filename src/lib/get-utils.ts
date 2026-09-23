@@ -1,5 +1,4 @@
 import { readdir, readFile } from "fs/promises"
-import * as prettier from "prettier"
 import { cache } from "react"
 import { formatWithOptions } from "util"
 import { extractExamples } from "./extract-examples"
@@ -49,7 +48,6 @@ export async function get_util_raw_code(context: string, filename: string) {
 }
 
 export function extract_examples(context: string, code: string, filename: string) {
-  // claude coded this.
   console.log(`extract_examples ${ context }`)
   return extractExamples(`./src/util/${ filename }`)
 }
@@ -106,34 +104,6 @@ export async function get_util_meta(context: string, filename: string, content_c
   }
 }
 
-async function format_example_code(code: string, content_code: string) {
-  let example_code = code
-  // Remove function wrappings
-  if (/^.*?=>\s*\{/m.test(example_code) || example_code.startsWith('function')) {
-    example_code = example_code.split('\n').slice(1, -1).join('\n')
-  } else if (/^.*?=>\s*/m.test(example_code)) {
-    example_code = example_code.replace(/^.*?=>\s*/, '')
-  }
-
-  // Normalise indent:
-  const count = example_code.match(/^ */)?.[ 0 ].length ?? 0
-  example_code = example_code
-    .split('\n')
-    .map(line => line.slice(count))
-    .join('\n')
-
-
-
-  example_code = await prettier.format(example_code, {
-    parser: "typescript",
-    semi: false,
-    bracketSpacing: true,
-    arrowParens: "avoid",
-    printWidth: 50,
-  })
-  return example_code
-}
-
 
 
 
@@ -149,6 +119,6 @@ declare global {
     examples?: {
       name: string,
       code: (console: { log: (...args: any[]) => void }) => void
-    }[]
+    }[],
   }
 }
