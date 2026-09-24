@@ -2,13 +2,10 @@ export async function post_discord_webhook(
   url: string,
   content: string
 ) {
-  const res = await fetch(url, {
+  const res = await fetch(url + `?thread_id=1552606655085285457`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      content,
-      thread_id: '1552606655085285457'
-    })
+    body: JSON.stringify({ content })
   })
   const json = await res.json()
   console.log(json)
