@@ -2,13 +2,15 @@ export async function post_discord_webhook(
   url: string,
   content: string
 ) {
-  await fetch(url, {
+  const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       content
     })
   })
+  const json = await res.json()
+  console.log(json)
 }
 
 export function timestamp(
