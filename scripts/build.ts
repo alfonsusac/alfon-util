@@ -66,9 +66,8 @@ try {
   const duration = performance.now() - start
 
 
-  /// count the lines
-  const line_count = logs.reduce((count, log) => count + log.split('\n').length, 0)
-
+  const lines = logs.flatMap(log => log.split('\n'))
+  const line_count = lines.length
   const joined_logs = logs.join('')
 
   void (async () => {
@@ -76,11 +75,17 @@ try {
       log_header,
       `-# "${ build_env.VERCEL_GIT_COMMIT_MESSAGE }"`,
       `-# ​`,
-      'Vercel Build Action Result',
+      'Build Logs',
       `-# ${ line_count } lines - ${ (duration / 1000).toFixed(2) }s`,
       '\`\`\`ansi',
       joined_logs.length > 1500 ? `${ joined_logs.slice(0, 1500) + '...' }` : `${ joined_logs }`,
       '\`\`\`',
+    )
+    await post_log(
+      "Domains",
+      `-# ${ build_env.VERCEL_URL }`,
+      `-# ${ build_env.VERCEL_BRANCH_URL }`,
+      `-# ${ build_env.VERCEL_PROJECT_PRODUCTION_URL }`,
     )
   })()
 
