@@ -32,6 +32,7 @@ try {
     throw new Error("DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL is not set")
 
 
+  const start = performance.now()
   const proc = Bun.spawn({
     cmd: [ 'next', 'build' ], stdout: 'pipe', stderr: 'pipe',
     env: { ...process.env, FORCE_COLOR: '1' }
@@ -62,20 +63,21 @@ try {
   ])
 
   const exitCode = await proc.exited
+  const duration = performance.now() - start
 
 
-
-  console.log(JSON.stringify(logs, null, 2))
-
-
+  /// count the lines
+  const line_count = logs.reduce((count, log) => count + log.split('\n').length, 0)
 
   const joined_logs = logs.join('')
 
   void (async () => {
     await post_log(
       log_header,
-      'Vercel Build Action Result',
       `-# "${ build_env.VERCEL_GIT_COMMIT_MESSAGE }"`,
+      `-# ​`,
+      'Vercel Build Action Result',
+      `${ line_count } lines - ${ (duration / 1000).toFixed(2) }s`,
       '\`\`\`ansi',
       joined_logs.length > 1500 ? `${ joined_logs.slice(0, 1500) + '...' }` : `${ joined_logs }`,
       '\`\`\`',
