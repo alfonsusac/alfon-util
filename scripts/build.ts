@@ -6,6 +6,8 @@ const build_env = process.env as VERCEL_BUILD_ENV & {
   DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL?: string
 }
 
+console.log("Build Env |", build_env.DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL)
+
 const v_team = "alfonsusacs-projects"
 const project_link = `https://vercel.com/${ v_team }/${ build_env.VERCEL_PROJECT_NAME }`
 const deployment_link = `https://vercel.com/${ v_team }/${ build_env.VERCEL_PROJECT_NAME }/${ build_env.VERCEL_DEPLOYMENT_ID.replace('dpl_', '') }`
