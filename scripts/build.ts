@@ -1,5 +1,5 @@
 import type { VERCEL_BUILD_ENV } from "@/content/notes/vercel/env_vars"
-import { link, linkOrPlain, post_discord_webhook, timestamp } from "@/content/utils/util-discord-webhook"
+import { maskedlink, linkOrPlain, post_discord_webhook, timestamp } from "@/content/utils/util-discord-webhook"
 import { expect } from "@/content/utils/util.env"
 
 const build_env = process.env as VERCEL_BUILD_ENV & {
@@ -17,7 +17,7 @@ async function post_log(title: string, message: string) {
     build_env.DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL!,
     [
       [
-        link(build_env.VERCEL_PROJECT_NAME, project_link),
+        maskedlink(build_env.VERCEL_PROJECT_NAME, project_link),
         build_env.VERCEL_ENV,
         title
       ].join(' - '),
@@ -51,12 +51,12 @@ try {
       'Vercel Build Triggered',
       [
         [
-          link(branch, branch_url),
-          link(commit_sha.slice(0, 7), commit_url),
+          maskedlink(branch, branch_url),
+          maskedlink(commit_sha.slice(0, 7), commit_url),
           build_env.VERCEL_GIT_COMMIT_MESSAGE,
         ].join(' - '),
         '-# ' + [
-          link('deployment', deployment_link),
+          maskedlink('deployment', deployment_link),
           author_md,
           timestamp(new Date(), "relative")
         ].join(' - '),

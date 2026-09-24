@@ -7,8 +7,12 @@ export async function post_discord_webhook(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ content })
   })
-  const json = await res.json()
-  console.log(json)
+  if (!res.ok) {
+    const json = await res.json()
+    console.log(json)
+  } else {
+    console.log("Message Alert Sent to Discord!")
+  }
 }
 
 export function timestamp(
@@ -30,6 +34,6 @@ export function timestamp(
 export function linkOrPlain(text: string, url?: string) {
   return url ? `[${ text }](${ url })` : text
 }
-export function link(text: string, url: string) {
-  return `[${ text }](${ url })`
+export function maskedlink(text: string, url: string) {
+  return `[${ text }](<${ url }>)`
 }
