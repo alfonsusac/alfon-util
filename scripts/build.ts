@@ -9,7 +9,6 @@ const build_env = process.env as VERCEL_BUILD_ENV & {
 console.log("Build Env |", build_env.DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL)
 
 const v_team = "alfonsusacs-projects"
-// const project_link = `https://vercel.com/${ v_team }/${ build_env.VERCEL_PROJECT_NAME }`
 const deployment_link = `https://vercel.com/${ v_team }/${ build_env.VERCEL_PROJECT_NAME }/${ build_env.VERCEL_DEPLOYMENT_ID.replace('dpl_', '') }`
 
 async function post_log(message: string) {
@@ -19,7 +18,7 @@ async function post_log(message: string) {
       // alfon-util - production - main-27776ab - alfonsusac
       '-# ' + maskedlink(build_env.VERCEL_PROJECT_NAME, deployment_link)
       + ' - ' + build_env.VERCEL_ENV
-      + ' - ' + maskedlink(`${ build_env.VERCEL_GIT_COMMIT_REF }-${ build_env.VERCEL_GIT_COMMIT_SHA.slice(0, 7)}`, `https://github.com/${ build_env.VERCEL_GIT_REPO_SLUG }/commit/${ build_env.VERCEL_GIT_COMMIT_SHA }`),
+      + ' - ' + maskedlink(`${ build_env.VERCEL_GIT_COMMIT_REF }-${ build_env.VERCEL_GIT_COMMIT_SHA.slice(0, 7) }`, `https://github.com/${ build_env.VERCEL_GIT_REPO_SLUG }/commit/${ build_env.VERCEL_GIT_COMMIT_SHA }`)
       + ' - ' + build_env.VERCEL_GIT_COMMIT_AUTHOR_LOGIN,
       message,
     ].join("\n")
