@@ -9,19 +9,19 @@ const build_env = process.env as VERCEL_BUILD_ENV & {
 console.log("Build Env |", build_env.DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL)
 
 const v_team = "alfonsusacs-projects"
-const project_link = `https://vercel.com/${ v_team }/${ build_env.VERCEL_PROJECT_NAME }`
+// const project_link = `https://vercel.com/${ v_team }/${ build_env.VERCEL_PROJECT_NAME }`
 const deployment_link = `https://vercel.com/${ v_team }/${ build_env.VERCEL_PROJECT_NAME }/${ build_env.VERCEL_DEPLOYMENT_ID.replace('dpl_', '') }`
 
-async function post_log(title: string, message: string) {
+async function post_log(message: string) {
   await post_discord_webhook(
     build_env.DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL!,
     [
-      [
-        maskedlink(build_env.VERCEL_PROJECT_NAME, project_link),
-        build_env.VERCEL_ENV,
-        title
-      ].join(' - '),
-      message
+      // alfon-util - production - main-27776ab - alfonsusac
+      '-# ' + maskedlink(build_env.VERCEL_PROJECT_NAME, deployment_link)
+      + ' - ' + build_env.VERCEL_ENV
+      + ' - ' + maskedlink(`${ build_env.VERCEL_GIT_COMMIT_REF }-${ build_env.VERCEL_GIT_COMMIT_SHA.slice(0, 7)}`, `https://github.com/${ build_env.VERCEL_GIT_REPO_SLUG }/commit/${ build_env.VERCEL_GIT_COMMIT_SHA }`),
+      + ' - ' + build_env.VERCEL_GIT_COMMIT_AUTHOR_LOGIN,
+      message,
     ].join("\n")
   )
 }
@@ -36,7 +36,6 @@ try {
 
     const git_author = expect(build_env.VERCEL_GIT_COMMIT_AUTHOR_NAME)
     const git_username = expect(build_env.VERCEL_GIT_COMMIT_AUTHOR_LOGIN)
-    const author_md = linkOrPlain(git_author, `https://github.com/${ git_username }`)
     const repo = expect(build_env.VERCEL_GIT_REPO_SLUG)
     const commit_sha = expect(build_env.VERCEL_GIT_COMMIT_SHA)
     const commit_url = `https://github.com/${ git_username }/${ repo }/commit/${ build_env.VERCEL_GIT_COMMIT_SHA }`
@@ -44,17 +43,15 @@ try {
     const branch_url = `https://github.com/${ git_username }/${ repo }/tree/${ branch }`
 
     post_log(
-      'Vercel Build Triggered',
       [
-        [
+        'Vercel Build Triggered',
+        '-# ' + [
           maskedlink(branch, branch_url),
           maskedlink(commit_sha.slice(0, 7), commit_url),
           build_env.VERCEL_GIT_COMMIT_MESSAGE,
         ].join(' - '),
         '-# ' + [
-          maskedlink('deployment', deployment_link),
-          author_md,
-          timestamp(new Date(), "relative")
+          maskedlink(git_username, `https://github.com/${ git_username }`),
         ].join(' - '),
       ].join("\n"))
   }
@@ -71,6 +68,6 @@ try {
       ? `\`\`\`${ error.stack?.slice(0, 1500) + '...' }\`\`\``
       : `\`\`\`${ error.stack }\`\`\``
     : ''
-  await post_log('Error occurred', `${ error_message }\n${ error_stack_section }`)
+  await post_log(`🔴  Error occurred: \`${ error_message }\`\n${ error_stack_section }`)
   throw error
 }
