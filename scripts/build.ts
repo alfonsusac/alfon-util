@@ -77,7 +77,7 @@ try {
       `-# "${ build_env.VERCEL_GIT_COMMIT_MESSAGE }"`,
       `-# ​`,
       'Vercel Build Action Result',
-      `${ line_count } lines - ${ (duration / 1000).toFixed(2) }s`,
+      `-# ${ line_count } lines - ${ (duration / 1000).toFixed(2) }s`,
       '\`\`\`ansi',
       joined_logs.length > 1500 ? `${ joined_logs.slice(0, 1500) + '...' }` : `${ joined_logs }`,
       '\`\`\`',
