@@ -65,12 +65,16 @@ try {
 
 
 
+
+
   const git_username = expect(build_env.VERCEL_GIT_COMMIT_AUTHOR_LOGIN)
   const repo = expect(build_env.VERCEL_GIT_REPO_SLUG)
   const commit_sha = expect(build_env.VERCEL_GIT_COMMIT_SHA)
   const commit_url = `https://github.com/${ git_username }/${ repo }/commit/${ build_env.VERCEL_GIT_COMMIT_SHA }`
   const branch = expect(build_env.VERCEL_GIT_COMMIT_REF)
   const branch_url = `https://github.com/${ git_username }/${ repo }/tree/${ branch }`
+
+  const joined_logs = logs.join('')
 
   post_log(
     [
@@ -80,9 +84,9 @@ try {
         maskedlink(commit_sha.slice(0, 7), commit_url),
         build_env.VERCEL_GIT_COMMIT_MESSAGE,
       ].join(' - '),
-      '-# ' + [
-        maskedlink(git_username, `https://github.com/${ git_username }`),
-      ].join(' - '),
+      '\`\`\`',
+      joined_logs.length > 1500 ? `${ joined_logs.slice(0, 1500) + '...' }` : `${ joined_logs }`,
+      '\`\`\`',
     ].join("\n"))
 
 
