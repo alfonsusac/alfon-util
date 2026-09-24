@@ -3,24 +3,36 @@ import { link, linkOrPlain, post_discord_webhook, timestamp } from "@/content/ut
 import { expect } from "@/content/utils/util.env"
 
 const build_env = process.env as VERCEL_BUILD_ENV & {
-  DISCORD_VERCEL_LOG_WEBHOOK_URL?: string
+  DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL?: string
 }
 
-function post_log(message: string) {
-  if (!build_env.DISCORD_VERCEL_LOG_WEBHOOK_URL)
-    throw new Error("DISCORD_VERCEL_LOG_WEBHOOK_URL is not set")
-  post_discord_webhook(build_env.DISCORD_VERCEL_LOG_WEBHOOK_URL, message)
+const v_team = "alfonsusacs-projects"
+const project_link = `https://vercel.com/${ v_team }/${ build_env.VERCEL_PROJECT_NAME }`
+const deployment_link = `https://vercel.com/${ v_team }/${ build_env.VERCEL_PROJECT_NAME }/${ build_env.VERCEL_DEPLOYMENT_ID.replace('dpl_', '') }`
+
+function post_log(title: string, message: string) {
+  post_discord_webhook(
+    build_env.DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL!,
+    [
+      [
+        link(build_env.VERCEL_PROJECT_NAME, project_link),
+        build_env.VERCEL_ENV,
+        title
+      ].join(' - '),
+      message
+    ].join("\n")
+  )
 }
 
 
 try {
   if (build_env.VERCEL === '1') {
-    if (!build_env.DISCORD_VERCEL_LOG_WEBHOOK_URL)
-      throw new Error("DISCORD_VERCEL_LOG_WEBHOOK_URL is not set")
+    if (!build_env.DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL)
+      throw new Error("DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL is not set")
 
-    const v_team = "alfonsusacs-projects"
-    const project_link = `https://vercel.com/${ v_team }/${ build_env.VERCEL_PROJECT_NAME }`
-    const deployment_link = `https://vercel.com/${ v_team }/${ build_env.VERCEL_PROJECT_NAME }/${ build_env.VERCEL_DEPLOYMENT_ID.replace('dpl_', '') }`
+    throw new Error("Vercel build triggered")
+
+
 
     const git_author = expect(build_env.VERCEL_GIT_COMMIT_AUTHOR_NAME)
     const git_username = expect(build_env.VERCEL_GIT_COMMIT_AUTHOR_LOGIN)
@@ -32,12 +44,8 @@ try {
     const branch_url = `https://github.com/${ git_username }/${ repo }/tree/${ branch }`
 
     post_log(
+      'Vercel Build Triggered',
       [
-        [
-          link(build_env.VERCEL_PROJECT_NAME, project_link),
-          build_env.VERCEL_ENV,
-          'Vercel Build Triggered'
-        ].join(' - '),
         [
           link(branch, branch_url),
           link(commit_sha.slice(0, 7), commit_url),
@@ -52,6 +60,12 @@ try {
   }
 
 } catch (error) {
-  console.error(error)
-  post_log(`Error occurred: ${ error }`)
+  const error_message = error instanceof Error ? error.message : String(error)
+  const error_stack_section = error instanceof Error
+    ? (error.stack && error.stack.length > 1500)
+      ? `\`\`\`${ error.stack?.slice(0, 1500) + '...' }\`\`\``
+      : `\`\`\`${ error.stack }\`\`\``
+    : ''
+  post_log('Error occurred', `${ error_message }\n${ error_stack_section }`)
+  throw error
 }
