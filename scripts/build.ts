@@ -12,8 +12,8 @@ const v_team = "alfonsusacs-projects"
 const project_link = `https://vercel.com/${ v_team }/${ build_env.VERCEL_PROJECT_NAME }`
 const deployment_link = `https://vercel.com/${ v_team }/${ build_env.VERCEL_PROJECT_NAME }/${ build_env.VERCEL_DEPLOYMENT_ID.replace('dpl_', '') }`
 
-function post_log(title: string, message: string) {
-  post_discord_webhook(
+async function post_log(title: string, message: string) {
+  await post_discord_webhook(
     build_env.DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL!,
     [
       [
@@ -25,6 +25,8 @@ function post_log(title: string, message: string) {
     ].join("\n")
   )
 }
+
+await post_log('test message', 'This is a test message for the Discord webhook.')
 
 
 try {
