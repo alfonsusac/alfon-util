@@ -76,7 +76,7 @@ try {
       log_header,
       'Vercel Build Action Result',
       `-# "${ build_env.VERCEL_GIT_COMMIT_MESSAGE }"`,
-      '\`\`\`',
+      '\`\`\`ansi',
       joined_logs.length > 1500 ? `${ joined_logs.slice(0, 1500) + '...' }` : `${ joined_logs }`,
       '\`\`\`',
     )
