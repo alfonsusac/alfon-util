@@ -1,6 +1,8 @@
 import type { VERCEL_BUILD_ENV } from "@/content/notes/vercel/env_vars"
 import { maskedlink, linkOrPlain, post_discord_webhook, timestamp } from "@/content/utils/util-discord-webhook"
 import { expect } from "@/content/utils/util.env"
+import type { WriteStream } from "tty"
+
 
 const build_env = process.env as VERCEL_BUILD_ENV & {
   DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL?: string
@@ -29,35 +31,64 @@ try {
   if (build_env.VERCEL === '1') {
     if (!build_env.DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL)
       throw new Error("DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL is not set")
-
-
-
-
-    const git_author = expect(build_env.VERCEL_GIT_COMMIT_AUTHOR_NAME)
-    const git_username = expect(build_env.VERCEL_GIT_COMMIT_AUTHOR_LOGIN)
-    const repo = expect(build_env.VERCEL_GIT_REPO_SLUG)
-    const commit_sha = expect(build_env.VERCEL_GIT_COMMIT_SHA)
-    const commit_url = `https://github.com/${ git_username }/${ repo }/commit/${ build_env.VERCEL_GIT_COMMIT_SHA }`
-    const branch = expect(build_env.VERCEL_GIT_COMMIT_REF)
-    const branch_url = `https://github.com/${ git_username }/${ repo }/tree/${ branch }`
-
-    post_log(
-      [
-        'Vercel Build Triggered',
-        '-# ' + [
-          maskedlink(branch, branch_url),
-          maskedlink(commit_sha.slice(0, 7), commit_url),
-          build_env.VERCEL_GIT_COMMIT_MESSAGE,
-        ].join(' - '),
-        '-# ' + [
-          maskedlink(git_username, `https://github.com/${ git_username }`),
-        ].join(' - '),
-      ].join("\n"))
   }
 
+  const proc = Bun.spawn({ cmd: [ 'next', 'build' ], stdout: 'pipe', stderr: 'pipe' })
+  const logs: string[] = []
+
+  async function read(stream: ReadableStream<Uint8Array>, echo: WriteStream) {
+    const reader = stream.getReader()
+    const decoder = new TextDecoder() // own decoder per stream
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      const text = decoder.decode(value, { stream: true })
+      logs.push(text)
+      echo.write(text)
+    }
+    const tail = decoder.decode()
+    if (tail) {
+      logs.push(tail)
+      echo.write(tail)
+    }
+  }
+
+  await Promise.all([
+    read(proc.stdout, process.stdout),
+    read(proc.stderr, process.stderr),
+  ])
+
+  const exitCode = await proc.exited
 
 
-  throw new Error("Something went wrong!")
+
+
+
+  const git_username = expect(build_env.VERCEL_GIT_COMMIT_AUTHOR_LOGIN)
+  const repo = expect(build_env.VERCEL_GIT_REPO_SLUG)
+  const commit_sha = expect(build_env.VERCEL_GIT_COMMIT_SHA)
+  const commit_url = `https://github.com/${ git_username }/${ repo }/commit/${ build_env.VERCEL_GIT_COMMIT_SHA }`
+  const branch = expect(build_env.VERCEL_GIT_COMMIT_REF)
+  const branch_url = `https://github.com/${ git_username }/${ repo }/tree/${ branch }`
+
+  post_log(
+    [
+      'Vercel Build Triggered',
+      '-# ' + [
+        maskedlink(branch, branch_url),
+        maskedlink(commit_sha.slice(0, 7), commit_url),
+        build_env.VERCEL_GIT_COMMIT_MESSAGE,
+      ].join(' - '),
+      '-# ' + [
+        maskedlink(git_username, `https://github.com/${ git_username }`),
+      ].join(' - '),
+    ].join("\n"))
+
+
+
+
+
 
 
 } catch (error) {
