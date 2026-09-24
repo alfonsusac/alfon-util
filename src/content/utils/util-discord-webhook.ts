@@ -6,7 +6,8 @@ export async function post_discord_webhook(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      content
+      content,
+      thread_id: '1552606655085285457'
     })
   })
   const json = await res.json()
