@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "bun scripts/build.ts",
     "start": "next start"
   },
   "dependencies": {
@@ -27,7 +27,8 @@
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@types/bun": "latest"
   },
   "packageManager": "pnpm@12.3.3"
 }
