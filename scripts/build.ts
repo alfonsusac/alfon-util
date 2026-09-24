@@ -70,6 +70,6 @@ try {
       ? `\`\`\`${ error.stack?.slice(0, 1500) + '...' }\`\`\``
       : `\`\`\`${ error.stack }\`\`\``
     : ''
-  post_log('Error occurred', `${ error_message }\n${ error_stack_section }`)
+  await post_log('Error occurred', `${ error_message }\n${ error_stack_section }`)
   throw error
 }
