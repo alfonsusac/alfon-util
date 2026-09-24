@@ -34,6 +34,6 @@ export function timestamp(
 export function linkOrPlain(text: string, url?: string) {
   return url ? `[${ text }](${ url })` : text
 }
-export function maskedlink(text: string, url: string) {
-  return `[${ text }](<${ url }>)`
+export function maskedlink(text: string, url?: string) {
+  return `[${ text }](<${ url ?? text }>)`
 }
