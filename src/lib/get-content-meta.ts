@@ -22,6 +22,7 @@ export async function get_content_meta(path: string, extracted_examples_with_ori
               compact: true,
               colors: true,
               breakLength: 50,
+              maxArrayLength: null,
               depth: 10,
             }, arg)).join(' '))
         return ({

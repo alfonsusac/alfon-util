@@ -24,8 +24,6 @@ export default function Home() {
 }
 
 async function HomeAsync() {
-  // const e = await get_all_file_contents()
-  // console.log(e)
   return <DirList />
 }
 

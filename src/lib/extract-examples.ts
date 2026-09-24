@@ -1,61 +1,23 @@
 import { Project, SyntaxKind, VariableDeclarationKind, Node, type CallExpression } from 'ts-morph'
 
-function dedent(text: string): string {
-  const lines = text.split('\n')
-
-  // ignore blank lines when computing the minimum indent
-  const indents = lines
-    .filter(line => line.trim().length > 0)
-    .map(line => line.match(/^[ \t]*/)?.[ 0 ].length ?? 0)
-
-  const minIndent = indents.length > 0 ? Math.min(...indents) : 0
-
-  return lines
-    .map(line => (line.trim().length > 0 ? line.slice(minIndent) : ''))
-    .join('\n')
-    .trim()
-}
-
-function extractFunctionBody(fn: Node): string {
-  stripConsoleLogWrapping(fn)
-
-
-  // Arrow function: could have a block body `{ ... }` or an inline expression body
-  if (fn.isKind(SyntaxKind.ArrowFunction)) {
-    const body = fn.getBody()
-
-    if (body.isKind(SyntaxKind.Block)) {
-      const fullText = body.getText() // includes surrounding { }
-      const inner = fullText.slice(1, -1) // strip braces
-      return dedent(inner)
+function add_source_file_at_path(filepath: string) {
+  try {
+    const project = new Project()
+    const sourceFile = project.addSourceFileAtPath(filepath)
+    return sourceFile
+  } catch (error) {
+    if (error instanceof Error && 'code' in error && error.code === "ENOENT") {
+      return "not-found"
     }
-
-    // inline expression body, e.g. `user => user.role`
-    return body.getText().trim()
+    throw error
   }
-
-  // `function (console) { ... }`
-  if (fn.isKind(SyntaxKind.FunctionExpression)) {
-    const body = fn.getBody()
-    if (!body) throw new Error('FunctionExpression has no body')
-    const fullText = body.getText()
-    return dedent(fullText.slice(1, -1))
-  }
-
-  // method shorthand: `code(console) { ... }`
-  if (fn.isKind(SyntaxKind.MethodDeclaration)) {
-    const body = fn.getBodyOrThrow()
-    const fullText = body.getText()
-    return dedent(fullText.slice(1, -1))
-  }
-
-  throw new Error(`Unsupported function kind: ${ fn.getKindName() }`)
 }
+
 
 export function extractExamples(filePath: string) {
   // claude coded this.
-  const project = new Project()
-  const sourceFile = project.addSourceFileAtPath(filePath)
+  const sourceFile = add_source_file_at_path(filePath)
+  if (sourceFile === "not-found") return "not-found"
 
   const metaDeclaration = sourceFile
     .getVariableDeclarations()
@@ -127,7 +89,56 @@ export function extractExamples(filePath: string) {
   })
 }
 
+function dedent(text: string): string {
+  const lines = text.split('\n')
 
+  // ignore blank lines when computing the minimum indent
+  const indents = lines
+    .filter(line => line.trim().length > 0)
+    .map(line => line.match(/^[ \t]*/)?.[ 0 ].length ?? 0)
+
+  const minIndent = indents.length > 0 ? Math.min(...indents) : 0
+
+  return lines
+    .map(line => (line.trim().length > 0 ? line.slice(minIndent) : ''))
+    .join('\n')
+    .trim()
+}
+
+function extractFunctionBody(fn: Node): string {
+  stripConsoleLogWrapping(fn)
+
+  // Arrow function: could have a block body `{ ... }` or an inline expression body
+  if (fn.isKind(SyntaxKind.ArrowFunction)) {
+    const body = fn.getBody()
+
+    if (body.isKind(SyntaxKind.Block)) {
+      const fullText = body.getText() // includes surrounding { }
+      const inner = fullText.slice(1, -1) // strip braces
+      return dedent(inner)
+    }
+
+    // inline expression body, e.g. `user => user.role`
+    return body.getText().trim()
+  }
+
+  // `function (console) { ... }`
+  if (fn.isKind(SyntaxKind.FunctionExpression)) {
+    const body = fn.getBody()
+    if (!body) throw new Error('FunctionExpression has no body')
+    const fullText = body.getText()
+    return dedent(fullText.slice(1, -1))
+  }
+
+  // method shorthand: `code(console) { ... }`
+  if (fn.isKind(SyntaxKind.MethodDeclaration)) {
+    const body = fn.getBodyOrThrow()
+    const fullText = body.getText()
+    return dedent(fullText.slice(1, -1))
+  }
+
+  throw new Error(`Unsupported function kind: ${ fn.getKindName() }`)
+}
 
 
 

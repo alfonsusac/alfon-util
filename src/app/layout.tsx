@@ -3,10 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { cn } from "cn"
 import { Suspense } from "react"
-// import { UtilList } from "./components"
 import {
   HomePageButton,
-  // SidebarLinkButton
 } from "./components.client"
 import { DirList } from "./ui-content-tree"
 import { MenuItem } from "./ui-menu-item-client"

@@ -4,6 +4,7 @@ import { Markdown } from "@/ui/markdown"
 import { Suspense } from "react"
 import { ConsoleBlock } from "../components"
 import { CONTENT_PATH } from "@/lib/get-content-tree"
+import { notFound } from "next/navigation"
 
 export async function generateStaticParams() {
   const content_list = await get_content_list()
@@ -12,7 +13,6 @@ export async function generateStaticParams() {
     .map(node => {
       return { slug: node.path.replace(CONTENT_PATH, '').slice(1).split('/') }
     })
-  console.log(params)
   return params
 }
 
@@ -28,7 +28,8 @@ async function EntryPageAsync(props: PageProps<"/[...slugs]">) {
   const params = await props.params
   const slugs = params.slugs
   const path = slugs.join('/')
-  const { code, meta, raw } = await get_content(path)
+  const { code, meta, raw, not_found } = await get_content(path)
+  if (not_found) return notFound()
 
   return <>
     <header>

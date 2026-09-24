@@ -9,21 +9,30 @@ export const get_content = cache(async function (
 ) {
   const [ code, raw ] = await get_content_raw_code(path)
   const extracted_examples = extractExamples(`${ CONTENT_PATH }/${ path }`)
+  if (extracted_examples === "not-found")
+    return { path: null, raw: null, code: null, meta: null, not_found: true } as const
+
   extracted_examples.forEach(e => e.content = `${ code }\n// ---cut-before---\n${ e.content }`)
   const meta = await get_content_meta(path, extracted_examples)
-  return { path, raw, code, meta }
+  return { path, raw, code, meta, not_found: false } as const
 })
 
 
 export async function get_content_raw_code(path: string) {
-  // console.log(`${ CONTENT_PATH }/${ path }`)
-  const raw = await readFile(`${ CONTENT_PATH }/${ path }`, { encoding: 'utf-8' })
-  const code =
-    `// @filename: ${ `${ CONTENT_PATH }/${ path }` }\n// ---cut-before---\n` + raw.replace(
-      /^export\s+const\s+\w+\s*:\s*Meta\s*=\s*\{[\s\S]*$/m,
-      ''
-    ).trim()
-  return [ code, raw ] as const
+  try {
+    const raw = await readFile(`${ CONTENT_PATH }/${ path }`, { encoding: 'utf-8' })
+    const code =
+      `// @filename: ${ `${ CONTENT_PATH }/${ path }` }\n// ---cut-before---\n` + raw.replace(
+        /^export\s+const\s+\w+\s*:\s*Meta\s*=\s*\{[\s\S]*$/m,
+        ''
+      ).trim()
+    return [ code, raw ] as const
+  } catch (error) {
+    if ((error instanceof Error && 'code' in error && error.code === "ENOENT")) {
+      return "not-found"
+    }
+    throw error
+  }
 }
 
 
