@@ -32,7 +32,10 @@ try {
     throw new Error("DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL is not set")
 
 
-  const proc = Bun.spawn({ cmd: [ 'next', 'build' ], stdout: 'pipe', stderr: 'pipe' })
+  const proc = Bun.spawn({
+    cmd: [ 'next', 'build' ], stdout: 'pipe', stderr: 'pipe',
+    env: { ...process.env, FORCE_COLOR: '1' }
+  })
   const logs: string[] = []
 
   async function read(stream: ReadableStream<Uint8Array>, echo: WriteStream) {
