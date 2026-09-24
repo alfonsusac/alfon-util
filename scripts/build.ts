@@ -84,9 +84,18 @@ try {
     await post_log(
       `-# ​`,
       "Domains",
-      `-# ${ maskedlink(build_env.VERCEL_PROJECT_PRODUCTION_URL) }`,
-      `-# ${ maskedlink(build_env.VERCEL_BRANCH_URL) }`,
-      `-# ${ maskedlink(build_env.VERCEL_URL) }`,
+      `-# ${ maskedlink(
+        build_env.VERCEL_PROJECT_PRODUCTION_URL,
+        'https://' + build_env.VERCEL_PROJECT_PRODUCTION_URL,
+      ) }`,
+      `-# ${ maskedlink(
+        build_env.VERCEL_BRANCH_URL,
+        'https://' + build_env.VERCEL_BRANCH_URL,
+      ) }`,
+      `-# ${ maskedlink(
+        build_env.VERCEL_URL,
+        'https://' + build_env.VERCEL_URL,
+      ) }`,
     )
   })()
 
