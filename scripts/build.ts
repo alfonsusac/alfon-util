@@ -26,15 +26,11 @@ async function post_log(title: string, message: string) {
   )
 }
 
-await post_log('test message', 'This is a test message for the Discord webhook.')
-
-
 try {
   if (build_env.VERCEL === '1') {
     if (!build_env.DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL)
       throw new Error("DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL is not set")
 
-    throw new Error("Vercel build triggered")
 
 
 
@@ -62,6 +58,11 @@ try {
         ].join(' - '),
       ].join("\n"))
   }
+
+
+
+  throw new Error("Something went wrong!")
+
 
 } catch (error) {
   const error_message = error instanceof Error ? error.message : String(error)
