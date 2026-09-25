@@ -80,7 +80,7 @@ export async function build_next_in_vercel_with_discord_log(args: {
       ? '<:checkl:1552875848430788658>'
       : '<:crossl:1552875846241357834> '
 
-    void (async () => {
+    const log_promise = (async () => {
       await post_log(
         log_header(),
         `-# "${ build_env.VERCEL_GIT_COMMIT_MESSAGE }"`,
@@ -112,8 +112,10 @@ export async function build_next_in_vercel_with_discord_log(args: {
         )
     })()
 
-    if (!success) 
+    if (!success) {
+      await log_promise 
       throw 'exit-code-1'
+    }
     return exitCode
   } catch (error) {
     if (error === 'exit-code-1') {
