@@ -108,7 +108,7 @@ export async function build_next_in_vercel_with_discord_log(args: {
         log_header(),
         `-# "${ build_env.VERCEL_GIT_COMMIT_MESSAGE }"`,
         `-# ​`,
-        `${ success_badge }Build Logs`,
+        `${ success_badge }${cmd.join(' ')}`,
         `-# ${ line_count } lines - ${ (duration / 1000).toFixed(2) }s`,
         '\`\`\`ansi',
         log_joined.length > 1500 ? `${ log_joined.slice(0, 1500) + '...' }` : `${ log_joined }`,
