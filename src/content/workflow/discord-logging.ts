@@ -114,9 +114,10 @@ export async function build_next_in_vercel_with_discord_log(args: {
 
     if (!success) {
       await log_promise
-      throw 'exit-code-1'
+      return 1
+      // throw 'exit-code-1'
     }
-    return exitCode
+    return 0
   } catch (error) {
     if (error !== 'exit-code-1') {
       const error_message = error instanceof Error ? error.message : String(error)
@@ -131,6 +132,7 @@ export async function build_next_in_vercel_with_discord_log(args: {
         error_stack_section
       )
     }
+    // return 1
     throw error
   }
 }
