@@ -112,12 +112,17 @@ export async function build_next_in_vercel_with_discord_log(args: {
         )
     })()
 
-    if (!success) {
-      await log_promise
-      return '1'
-      // throw 'exit-code-1'
-    }
-    return '0'
+
+    process.exitCode = exitCode
+    return
+
+
+    // if (!success) {
+    //   await log_promise
+    //   process.exitCode = exitCode
+    //   return
+    //   // throw 'exit-code-1'
+    // }
   } catch (error) {
     if (error !== 'exit-code-1') {
       const error_message = error instanceof Error ? error.message : String(error)
