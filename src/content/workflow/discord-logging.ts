@@ -35,7 +35,6 @@ export async function build_next_in_vercel_with_discord_log(args: {
       if (!build_env.DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL)
         throw new Error("DISCORD_VERCEL_BUILD_LOG_WEBHOOK_URL is not set")
 
-
     const start = performance.now()
     const proc = Bun.spawn({
       cmd: [ 'next', 'build' ], stdout: 'pipe', stderr: 'pipe',
@@ -68,8 +67,9 @@ export async function build_next_in_vercel_with_discord_log(args: {
 
     const exitCode = await proc.exited
     const duration = performance.now() - start
+    const success = exitCode === 0
 
-    console.log(`Build finished in ${(duration / 1000).toFixed(2)}s with exit code ${exitCode}`)
+    console.log(`Build finished in ${ (duration / 1000).toFixed(2) }s with exit code ${ exitCode }`)
     // 0 -> success
     // 1 -> failure   
 
@@ -82,36 +82,34 @@ export async function build_next_in_vercel_with_discord_log(args: {
         log_header(),
         `-# "${ build_env.VERCEL_GIT_COMMIT_MESSAGE }"`,
         `-# ​`,
-        'Build Logs',
+        `Build Logs ${ success ? '<:check:1552872084823343104>' : '<:cross:1552872106360840295>' }`,
         `-# ${ line_count } lines - ${ (duration / 1000).toFixed(2) }s`,
         '\`\`\`ansi',
         joined_logs.length > 1500 ? `${ joined_logs.slice(0, 1500) + '...' }` : `${ joined_logs }`,
         '\`\`\`',
       )
-      await post_log(
-        `-# ​`,
-        "Domains",
-        `-# ${ maskedlink(
-          build_env.VERCEL_PROJECT_PRODUCTION_URL,
-          'https://' + build_env.VERCEL_PROJECT_PRODUCTION_URL,
-        ) }`,
-        `-# ${ maskedlink(
-          build_env.VERCEL_BRANCH_URL,
-          'https://' + build_env.VERCEL_BRANCH_URL,
-        ) }`,
-        `-# ${ maskedlink(
-          build_env.VERCEL_URL,
-          'https://' + build_env.VERCEL_URL,
-        ) }`,
-      )
+      if (success)
+        await post_log(
+          `-# ​`,
+          "Domains",
+          `-# ${ maskedlink(
+            build_env.VERCEL_PROJECT_PRODUCTION_URL,
+            'https://' + build_env.VERCEL_PROJECT_PRODUCTION_URL,
+          ) }`,
+          `-# ${ maskedlink(
+            build_env.VERCEL_BRANCH_URL,
+            'https://' + build_env.VERCEL_BRANCH_URL,
+          ) }`,
+          `-# ${ maskedlink(
+            build_env.VERCEL_URL,
+            'https://' + build_env.VERCEL_URL,
+          ) }`,
+          `-# ​`,
+          `-# ​`,
+        )
     })()
 
-
-
-
-
-
-
+    return exitCode
   } catch (error) {
     const error_message = error instanceof Error ? error.message : String(error)
     const error_stack_section = error instanceof Error
