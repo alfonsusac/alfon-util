@@ -80,7 +80,8 @@ export async function build_next_in_vercel_with_discord_log(args: {
       ? '<:checkl:1552875848430788658>'
       : '<:crossl:1552875846241357834>'
 
-    const log_promise = (async () => {
+    // *sigh* has to await for this before process return so the fetch actually went through
+    await (async () => {
       await post_log(
         log_header(),
         `-# "${ build_env.VERCEL_GIT_COMMIT_MESSAGE }"`,
@@ -112,17 +113,8 @@ export async function build_next_in_vercel_with_discord_log(args: {
         )
     })()
 
-
     process.exitCode = exitCode
     return
-
-
-    // if (!success) {
-    //   await log_promise
-    //   process.exitCode = exitCode
-    //   return
-    //   // throw 'exit-code-1'
-    // }
   } catch (error) {
     if (error !== 'exit-code-1') {
       const error_message = error instanceof Error ? error.message : String(error)
@@ -133,7 +125,7 @@ export async function build_next_in_vercel_with_discord_log(args: {
         : ''
       await post_log(
         log_header(),
-        `🔴  Error occurred: \`${ error_message }\``,
+        `<:crossl:1552875846241357834>Error occurred: \`${ error_message }\``,
         error_stack_section
       )
     }
