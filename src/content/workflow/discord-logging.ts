@@ -109,6 +109,10 @@ export async function build_next_in_vercel_with_discord_log(args: {
         )
     })()
 
+    if (!success) {
+      throw new Error(`Build failed with exit code ${ exitCode }`)
+    }
+
     return exitCode
   } catch (error) {
     const error_message = error instanceof Error ? error.message : String(error)
