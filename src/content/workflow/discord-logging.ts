@@ -77,7 +77,7 @@ export async function build_next_in_vercel_with_discord_log(args: {
     const line_count = lines.length
     const joined_logs = logs.join('')
     const success_badge = success
-      ? '<:checkl:1552875848430788658>'
+      ? '<:checkl:1552880098846449784>'
       : '<:crossl:1552875846241357834>'
 
     // *sigh* has to await for this before process return so the fetch actually went through
