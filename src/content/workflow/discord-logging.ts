@@ -76,13 +76,16 @@ export async function build_next_in_vercel_with_discord_log(args: {
     const lines = logs.flatMap(log => log.split('\n'))
     const line_count = lines.length
     const joined_logs = logs.join('')
+    const success_badge = success
+      ? '<:checkl:1552875848430788658>'
+      : '<:crossl:1552875846241357834> '
 
     void (async () => {
       await post_log(
         log_header(),
         `-# "${ build_env.VERCEL_GIT_COMMIT_MESSAGE }"`,
         `-# ​`,
-        `Build Logs ${ success ? '<:check:1552872084823343104>' : '<:cross:1552872106360840295>' }`,
+        `${ success_badge } Build Logs`,
         `-# ${ line_count } lines - ${ (duration / 1000).toFixed(2) }s`,
         '\`\`\`ansi',
         joined_logs.length > 1500 ? `${ joined_logs.slice(0, 1500) + '...' }` : `${ joined_logs }`,
@@ -109,12 +112,13 @@ export async function build_next_in_vercel_with_discord_log(args: {
         )
     })()
 
-    if (!success) {
-      throw new Error(`Build failed with exit code ${ exitCode }`)
-    }
-
+    if (!success) 
+      throw 'exit-code-1'
     return exitCode
   } catch (error) {
+    if (error === 'exit-code-1') {
+      throw '"next build" Build failed with exit code 1'
+    }
     const error_message = error instanceof Error ? error.message : String(error)
     const error_stack_section = error instanceof Error
       ? (error.stack && error.stack.length > 1500)
