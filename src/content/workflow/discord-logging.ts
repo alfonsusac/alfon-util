@@ -69,7 +69,7 @@ export async function build_next_in_vercel_with_discord_log(args: {
     const duration = performance.now() - start
     const success = exitCode === 0
 
-    console.log(`Build finished in ${ (duration / 1000).toFixed(2) }s with exit code ${ exitCode }`)
+    console.log(`Build finished in ${ (duration / 1000).toFixed(2) }s`)
     // 0 -> success
     // 1 -> failure   
 
@@ -78,14 +78,14 @@ export async function build_next_in_vercel_with_discord_log(args: {
     const joined_logs = logs.join('')
     const success_badge = success
       ? '<:checkl:1552875848430788658>'
-      : '<:crossl:1552875846241357834> '
+      : '<:crossl:1552875846241357834>'
 
     const log_promise = (async () => {
       await post_log(
         log_header(),
         `-# "${ build_env.VERCEL_GIT_COMMIT_MESSAGE }"`,
         `-# ​`,
-        `${ success_badge } Build Logs`,
+        `${ success_badge }Build Logs`,
         `-# ${ line_count } lines - ${ (duration / 1000).toFixed(2) }s`,
         '\`\`\`ansi',
         joined_logs.length > 1500 ? `${ joined_logs.slice(0, 1500) + '...' }` : `${ joined_logs }`,
@@ -113,26 +113,24 @@ export async function build_next_in_vercel_with_discord_log(args: {
     })()
 
     if (!success) {
-      await log_promise 
+      await log_promise
       throw 'exit-code-1'
     }
     return exitCode
   } catch (error) {
-    if (error === 'exit-code-1') {
-      throw '"next build" Build failed with exit code 1'
+    if (error !== 'exit-code-1') {
+      const error_message = error instanceof Error ? error.message : String(error)
+      const error_stack_section = error instanceof Error
+        ? (error.stack && error.stack.length > 1500)
+          ? `\`\`\`${ error.stack?.slice(0, 1500) + '...' }\`\`\``
+          : `\`\`\`${ error.stack }\`\`\``
+        : ''
+      await post_log(
+        log_header(),
+        `🔴  Error occurred: \`${ error_message }\``,
+        error_stack_section
+      )
     }
-    const error_message = error instanceof Error ? error.message : String(error)
-    const error_stack_section = error instanceof Error
-      ? (error.stack && error.stack.length > 1500)
-        ? `\`\`\`${ error.stack?.slice(0, 1500) + '...' }\`\`\``
-        : `\`\`\`${ error.stack }\`\`\``
-      : ''
-    await post_log(
-      log_header(),
-      `🔴  Error occurred: \`${ error_message }\``,
-      error_stack_section
-    )
     throw error
   }
-
 }
